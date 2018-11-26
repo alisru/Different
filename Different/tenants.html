@@ -17,7 +17,7 @@
     </style>
 </head>
 <body>
-    Hi
+    <h1>Different rent viewer tenants</h1> 
     <script>
         fetch("https://hiring-task-api.herokuapp.com/v1/leases/" ).then(Response => { return Response.json();}).then(data =>{PrintLease(data);});
                
@@ -26,7 +26,7 @@
                 //simply grab the json data & print an entry for each element
                 item = document.createElement("a");
                 item.innerHTML = "Tenant:" + element.tenant + "     ID:" + element.id + "<br><br>";
-                item.href = "./leases?leaseID=" + element.id;//adds the id as a query string
+                item.href = "./leases.html?leaseID=" + element.id;//adds the id as a query string
 
                 document.getElementById("leaseDiv").appendChild(item);
             });
