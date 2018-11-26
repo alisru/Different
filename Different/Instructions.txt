@@ -1,0 +1,7 @@
+Place folder anywhere or in appropriate server folder
+
+Open tenants.html in a browser or navigate to the appropriate url within the server
+Use the links provided in tenants to view the leases for each id
+Or
+Open leases.html and replace the id's value in the url with another to view the leases for that id
+Eg; ?leaseID=value, ?leaseID=123
