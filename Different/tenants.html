@@ -1,0 +1,43 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Different rent viewer tenants</title>
+    <meta name="description" content="Different rent viewer">
+    <meta name="author" content="Jarrod">
+    <style>
+    table, td{
+        text-align: center;
+        border: 1px solid black;
+    }
+    
+    </style>
+</head>
+<body>
+    Hi
+    <script>
+        fetch("https://hiring-task-api.herokuapp.com/v1/leases/" ).then(Response => { return Response.json();}).then(data =>{PrintLease(data);});
+               
+        function PrintLease(jsondta){
+            jsondta.forEach(element => {
+                //simply grab the json data & print an entry for each element
+                item = document.createElement("a");
+                item.innerHTML = "Tenant:" + element.tenant + "     ID:" + element.id + "<br><br>";
+                item.href = "./leases?leaseID=" + element.id;//adds the id as a query string
+
+                document.getElementById("leaseDiv").appendChild(item);
+            });
+        }
+
+
+    </script>
+
+    <div id = "leaseDiv">
+    </div>
+
+
+</body>
+</html>

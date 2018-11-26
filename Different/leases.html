@@ -1,0 +1,101 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Different rent viewer</title>
+    <meta name="description" content="Different rent viewer">
+    <meta name="author" content="Jarrod">
+    <style>
+    table, td{
+        text-align: center;
+        border: 1px solid black;
+    }
+    </style>
+</head>
+<body>
+    Hi
+    <script>
+       if (GetLeaseID() == undefined) {
+           location.replace(self.location + "?leaseID=1")//if the page is viewed nakedly, reload with a query string
+       }
+        //fetch the json data from the API with the relevant id, then add the response to the table
+        fetch("https://hiring-task-api.herokuapp.com/v1/leases/" + GetLeaseID() ).then(Response => { return Response.json();}).then(data =>{console.log(data);PrintLease(data);});
+        
+
+        function GetLeaseID(){
+            var id;
+            var urlString = decodeURI(location.search);                                 //gain the search string from the URL, everything after and including the ?
+            var splitter = urlString.split("="); 
+            id = splitter[1];
+            return id;
+        }
+
+        function PrintLease(jsondta){
+            var weekDay = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+            var startDate = new Date(jsondta.start_date), endDate = new Date(jsondta.end_date);
+            var iterDate = new Date(startDate),tDate = new Date(iterDate), iter = 0;
+            var frequency = jsondta.frequency, dayFreq = 0, first = true;
+            switch (frequency) {//frequency stores how many days to count until the next pay day
+                case "weekly":
+                    dayFreq = 7;
+                    break;
+                case "monthly":
+                    dayFreq = 28;//28 seems solid as 30 forces a 35 day gap & other numbers naturally give 28 (29, etc)
+                    break;
+                case "fortnightly":
+                    dayFreq = 14;
+                    break;
+                default:
+                    break;
+            }
+
+            //add days onto start date until comes to pay day;
+            while(iterDate < endDate){
+                var item = document.createElement("tr");
+                
+                //if the day is a payment day, and the frequency is correct(unless on the first pass) then show the listing for the period between now and then
+                if ((weekDay[iterDate.getDay()] == jsondta.payment_day) && (iter >= dayFreq-1 || ((weekDay[startDate.getDay()] != jsondta.payment_day)&& first))) {
+                    
+                    item.innerHTML = "<td>"+ tDate.toDateString() + "</td><td> " + iterDate.toDateString() +
+                         " </td><td>" + iter + " </td><td>$" + Math.floor( jsondta.rent / (dayFreq / iter))+"</td>";
+                    tDate.setTime(iterDate.getTime());
+                    iter = 0;
+                    first = false;
+                }
+                iterDate.setDate(iterDate.getDate() + 1);
+                //console.log(tDate + "tdate");
+                iter++;
+            document.getElementById("leaseTbl").appendChild(item);
+            }
+            //if there's days left over
+            if (iter > 1) {
+                
+                if (iterDate.getDate() > endDate.getDate()) {//countering date addition weirdness
+                    iterDate.setDate(iterDate.getDate() - 1);            
+                }
+                    //add the remaining item
+                var item = document.createElement("tr");
+                item.innerHTML = "<td>"+ tDate.toDateString() + "</td><td> " + iterDate.toDateString() +
+                    " </td><td>" + iter + " </td><td>$" + Math.floor( jsondta.rent / (dayFreq / iter))+"</td>";
+
+                document.getElementById("leaseTbl").appendChild(item);
+            }            
+        }
+
+
+    </script>
+
+    <div id = "leaseDiv">
+        <table id = "leaseTbl">
+            <tr>
+                <td>From</td> <td>To</td> <td>Days</td><td>Amount</td>
+            </tr>
+        </table>
+    </div>
+
+
+</body>
+</html>
