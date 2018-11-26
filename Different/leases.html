@@ -54,13 +54,19 @@
 
             //add days onto start date until comes to pay day;
             while(iterDate < endDate){
-                var item = document.createElement("tr");
+                var item = document.createElement("tr"), rent = jsondta.rent;
                 
                 //if the day is a payment day, and the frequency is correct(unless on the first pass) then show the listing for the period between now and then
                 if ((weekDay[iterDate.getDay()] == jsondta.payment_day) && (iter >= dayFreq-1 || ((weekDay[startDate.getDay()] != jsondta.payment_day)&& first))) {
-                    
+                    if ((dayFreq / iter) != 1) {
+                        rent = Math.floor( jsondta.rent / (dayFreq / iter));
+                    }else{
+                        rent *=  dayFreq/7;
+                    }
+                     
+
                     item.innerHTML = "<td>"+ tDate.toDateString() + "</td><td> " + iterDate.toDateString() +
-                         " </td><td>" + iter + " </td><td>$" + Math.floor( jsondta.rent / (dayFreq / iter))+"</td>";
+                         " </td><td>" + iter + " </td><td>$" + rent +"</td>";
                     tDate.setTime(iterDate.getTime());
                     iter = 0;
                     first = false;
